@@ -3,6 +3,9 @@
 ## Current status
 - Working optimisation, but no hyperparameter optimisation
 
+## Gif comparison
+- This lib (Cs) vs python bayes_opt lib (Py)
+- Main difference: Py optimises noise parameter, Cs sticks with static noise parameter (currently v small)
 ![Alt Text](https://github.com/amschel-de-r/BayesOpt/blob/master/bayesopt.gif?raw=true)
 
 ## To Do
