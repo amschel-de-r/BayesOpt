@@ -1,0 +1,70 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/amschel/Desktop/Other/Programming/CSharp/Projects/BayesOpt/BayesOpt.csproj": {}
+  },
+  "projects": {
+    "/Users/amschel/Desktop/Other/Programming/CSharp/Projects/BayesOpt/BayesOpt.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/amschel/Desktop/Other/Programming/CSharp/Projects/BayesOpt/BayesOpt.csproj",
+        "projectName": "BayesOpt",
+        "projectPath": "/Users/amschel/Desktop/Other/Programming/CSharp/Projects/BayesOpt/BayesOpt.csproj",
+        "packagesPath": "/Users/amschel/.nuget/packages/",
+        "outputPath": "/Users/amschel/Desktop/Other/Programming/CSharp/Projects/BayesOpt/obj/",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "/Users/amschel/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp2.2"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp2.2": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp2.2": {
+          "dependencies": {
+            "MathNet.Numerics": {
+              "target": "Package",
+              "version": "[4.9.0, )"
+            },
+            "MathNet.Numerics.MKL.Linux-x86": {
+              "target": "Package",
+              "version": "[2.0.0, )"
+            },
+            "Microsoft.NETCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )",
+              "autoReferenced": true
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[11.0.2, )"
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    }
+  }
+}

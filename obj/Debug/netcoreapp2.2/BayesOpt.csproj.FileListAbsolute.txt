@@ -1,0 +1,13 @@
+/Users/amschel/Desktop/Other/Programming/CSharp/Projects/BayesOpt/bin/Debug/netcoreapp2.2/BayesOpt.deps.json
+/Users/amschel/Desktop/Other/Programming/CSharp/Projects/BayesOpt/bin/Debug/netcoreapp2.2/BayesOpt.runtimeconfig.json
+/Users/amschel/Desktop/Other/Programming/CSharp/Projects/BayesOpt/bin/Debug/netcoreapp2.2/BayesOpt.runtimeconfig.dev.json
+/Users/amschel/Desktop/Other/Programming/CSharp/Projects/BayesOpt/bin/Debug/netcoreapp2.2/BayesOpt.dll
+/Users/amschel/Desktop/Other/Programming/CSharp/Projects/BayesOpt/bin/Debug/netcoreapp2.2/BayesOpt.pdb
+/Users/amschel/Desktop/Other/Programming/CSharp/Projects/BayesOpt/obj/Debug/netcoreapp2.2/BayesOpt.csprojAssemblyReference.cache
+/Users/amschel/Desktop/Other/Programming/CSharp/Projects/BayesOpt/obj/Debug/netcoreapp2.2/BayesOpt.csproj.CoreCompileInputs.cache
+/Users/amschel/Desktop/Other/Programming/CSharp/Projects/BayesOpt/obj/Debug/netcoreapp2.2/BayesOpt.AssemblyInfoInputs.cache
+/Users/amschel/Desktop/Other/Programming/CSharp/Projects/BayesOpt/obj/Debug/netcoreapp2.2/BayesOpt.AssemblyInfo.cs
+/Users/amschel/Desktop/Other/Programming/CSharp/Projects/BayesOpt/obj/Debug/netcoreapp2.2/BayesOpt.dll
+/Users/amschel/Desktop/Other/Programming/CSharp/Projects/BayesOpt/obj/Debug/netcoreapp2.2/BayesOpt.pdb
+/Users/amschel/Desktop/Other/Programming/CSharp/Projects/BayesOpt/bin/Debug/netcoreapp2.2/x86/MathNet.Numerics.MKL.dll
+/Users/amschel/Desktop/Other/Programming/CSharp/Projects/BayesOpt/bin/Debug/netcoreapp2.2/x86/libiomp5.so
