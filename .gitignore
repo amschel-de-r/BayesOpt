@@ -16,3 +16,8 @@ Corridor/Library/metadata/
 # Visual Studio Code generated  #
 # ============================= #
 .vscode/
+
+# ========================= #
+# Data Output from Testing  #
+# ========================= #
+DataOutput/*
