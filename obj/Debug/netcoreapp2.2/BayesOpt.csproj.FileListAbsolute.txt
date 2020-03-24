@@ -9,5 +9,3 @@
 /Users/amschel/Desktop/Other/Programming/CSharp/Projects/BayesOpt/obj/Debug/netcoreapp2.2/BayesOpt.AssemblyInfo.cs
 /Users/amschel/Desktop/Other/Programming/CSharp/Projects/BayesOpt/obj/Debug/netcoreapp2.2/BayesOpt.dll
 /Users/amschel/Desktop/Other/Programming/CSharp/Projects/BayesOpt/obj/Debug/netcoreapp2.2/BayesOpt.pdb
-/Users/amschel/Desktop/Other/Programming/CSharp/Projects/BayesOpt/bin/Debug/netcoreapp2.2/x86/MathNet.Numerics.MKL.dll
-/Users/amschel/Desktop/Other/Programming/CSharp/Projects/BayesOpt/bin/Debug/netcoreapp2.2/x86/libiomp5.so

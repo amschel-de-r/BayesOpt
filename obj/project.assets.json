@@ -11,12 +11,6 @@
           "lib/netstandard2.0/MathNet.Numerics.dll": {}
         }
       },
-      "MathNet.Numerics.MKL.Linux-x86/2.0.0": {
-        "type": "package",
-        "build": {
-          "build/MathNet.Numerics.MKL.Linux-x86.targets": {}
-        }
-      },
       "Microsoft.NETCore.App/2.2.0": {
         "type": "package",
         "dependencies": {
@@ -252,22 +246,6 @@
         "lib/netstandard2.0/MathNet.Numerics.xml",
         "mathnet.numerics.4.9.0.nupkg.sha512",
         "mathnet.numerics.nuspec"
-      ]
-    },
-    "MathNet.Numerics.MKL.Linux-x86/2.0.0": {
-      "sha512": "k8qerufuohD2dbPLlHnaGTPQwtJTfRwk5UjZ1JCM+1W1kyYE9TE6tC5wDR6Ds4FISWtgWH3NpkV6nwdZDUWV1g==",
-      "type": "package",
-      "path": "mathnet.numerics.mkl.linux-x86/2.0.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "build/MathNet.Numerics.MKL.Linux-x86.targets",
-        "build/x86/MathNet.Numerics.MKL.dll",
-        "build/x86/libiomp5.so",
-        "license.txt",
-        "mathnet.numerics.mkl.linux-x86.2.0.0.nupkg.sha512",
-        "mathnet.numerics.mkl.linux-x86.nuspec",
-        "readme.txt"
       ]
     },
     "Microsoft.NETCore.App/2.2.0": {
@@ -772,7 +750,6 @@
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v2.2": [
       "MathNet.Numerics >= 4.9.0",
-      "MathNet.Numerics.MKL.Linux-x86 >= 2.0.0",
       "Microsoft.NETCore.App >= 2.2.0",
       "Newtonsoft.Json >= 11.0.2"
     ]
@@ -819,10 +796,6 @@
           "MathNet.Numerics": {
             "target": "Package",
             "version": "[4.9.0, )"
-          },
-          "MathNet.Numerics.MKL.Linux-x86": {
-            "target": "Package",
-            "version": "[2.0.0, )"
           },
           "Microsoft.NETCore.App": {
             "suppressParent": "All",

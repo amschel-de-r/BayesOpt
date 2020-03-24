@@ -43,10 +43,6 @@
               "target": "Package",
               "version": "[4.9.0, )"
             },
-            "MathNet.Numerics.MKL.Linux-x86": {
-              "target": "Package",
-              "version": "[2.0.0, )"
-            },
             "Microsoft.NETCore.App": {
               "suppressParent": "All",
               "target": "Package",
