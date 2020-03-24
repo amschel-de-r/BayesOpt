@@ -3,6 +3,8 @@
 ## Current status
 - Working optimisation, but no hyperparameter optimisation
 
+![Alt Text](https://github.com/amschel-de-r/BayesOpt/blob/master/bayesopt.gif?raw=true)
+
 ## To Do
 - Add hyperparameter optimisation (grid search)
 - Test feasibility of L_BFGS_B for hyperparameters see dotnumerics [lib](https://github.com/davidsiaw/neuron/tree/master/DotNumerics/Optimization) ([website](http://www.dotnumerics.com/))
