@@ -41,9 +41,9 @@ namespace BayesOpt.AcquisitionFunctions
             return vals;
         }
 
-        protected (double mean, double covariance) predict(double x)
+        protected (double mean, double covariance) predict(double x, bool returnStd = false)
         {
-            var prediction = _gp.predict(x);
+            var prediction = _gp.predict(x, returnStd);
             if (logData)
             {
                 mean.Add(prediction.mean);

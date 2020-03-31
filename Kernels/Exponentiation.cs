@@ -10,6 +10,7 @@ namespace BayesOpt.Kernels
         {
             this.kernel = kernel;
             this.exponent = exponent;
+            this.hyperparameters = kernel.hyperparameters;
         }
         internal override double Compute(double left, double right) 
         {

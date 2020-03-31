@@ -29,7 +29,7 @@ def log_gp(optimizer, x, i):
     
     
     utility_function = UtilityFunction(kind="ei", kappa=2.576, xi=0)
-    utility = utility_function.utility(x, optimizer._gp, 0)
+    utility = utility_function.utility(x, optimizer._gp, optimizer._space.target.max())
     pynextbest.append(optimizer.suggest(utility_function)['x'])
 
     x = list(x.flatten())
@@ -50,10 +50,11 @@ def log_gp(optimizer, x, i):
         json.dump(er, json_file)
 
 
-runs = 20
+runs = 40
 
 pbounds = {'x': (0, 8)}
 optimizer = BayesianOptimization(blackbox, pbounds, 2, 0)
+optimizer.set_gp_params(kernel=None, alpha=1e-5)
 optimizer.probe({"x": 0}, lazy=True)
 optimizer.probe({"x": 8}, lazy=True)
 x = np.linspace(0, 8, 800).reshape(-1, 1)
@@ -65,6 +66,7 @@ for i in range(runs):
     optimizer.maximize(init_points=0, n_iter=1, acq='ei', kappa=2.576, xi=0)
     log_gp(optimizer, x, i)
     print(i)
+    print(optimizer._gp.log_marginal_likelihood_value_)
 
 
 with open("DataOutput/pythonnextbest.json", 'w') as json_file:

@@ -12,6 +12,7 @@ namespace BayesOpt.GPR
     {
         private Kernel kernel;
         private Matrix<double> covariance;
+        private Matrix<double> K_inv = null;
         private double alpha;
         // optimizer
         // nRestartsOptimizer
@@ -23,11 +24,11 @@ namespace BayesOpt.GPR
         private Vector<double> yTrainNormalized;
         private Cholesky<double> cho;
         private Vector<double> alpha_;
-        // logMargLike
-        public GaussianProcessRegressor(Kernel kernel = null, bool normalizeY = false, double alpha = 1e-3)
+        public double logMarginalLikelihoodValue;
+        public GaussianProcessRegressor(Kernel kernel = null, bool normalizeY = false, double alpha = 1e-5)
         {
             // TEST speed
-            this.kernel = kernel ?? new RBF(lenScale: 1) + new WhiteKernel(noiseValue: alpha); // default kernel if none supplied
+            this.kernel = kernel ?? new RBF(lenScale: 1) * new ConstantKernel(constantValue: 1); // default kernel if none supplied
             this.normalizeY = normalizeY;
             this.alpha = alpha;
             xTrain = new List<double>();
@@ -54,6 +55,7 @@ namespace BayesOpt.GPR
             try
             {
                 cho = covariance.Cholesky();
+                K_inv = null;
             }
             catch (System.ArgumentException)
             {
@@ -64,12 +66,15 @@ namespace BayesOpt.GPR
             }
             
             alpha_ = cho.Solve(yTrainNormalized);
+            logMarginalLikelihoodValue = logMarginalLikelihood(kernel.theta);
         }
 
-        public (double mean, double covariance) predict(double xQuery)
+        public (double mean, double covariance) predict(double xQuery, bool returnStd = false)
         {
             if (xTrain.Count == 0)
             {
+                if (returnStd)
+                    return (mean: 0, covariance: Math.Sqrt(kernel.Compute(xQuery)));
                 return (mean: 0, covariance: kernel.Compute(xQuery));
             }
 
@@ -80,20 +85,33 @@ namespace BayesOpt.GPR
             double mean = kstar.DotProduct(alpha_);
             mean = normalizeY ? mean + yTrainMean : mean;
 
-            var v = cho.Solve(kstar);
-            double covariance = kernel.Compute(xQuery, xQuery) - kstar.DotProduct(v);
-            
-            return (mean, covariance);
+            if (returnStd)
+            {
+                // if (K_inv == null)
+                //     K_inv = cho.Solve(Matrix<double>.Build.DenseIdentity(this.covariance.RowCount()));
+                var v = cho.Solve(kstar);
+                double covariance = Math.Sqrt(kernel.Compute(xQuery, xQuery) - kstar.DotProduct(v));
+                covariance = covariance < 0 ? 0 : covariance;
+                
+                return (mean, covariance);
+            }
+            else
+            {
+                var v = cho.Solve(kstar);
+                double covariance = kernel.Compute(xQuery, xQuery) - kstar.DotProduct(v);
+                
+                return (mean, covariance);
+            }            
         }
 
-        public (double[] mean, double[] covariance) predict(double[] xQueries)
+        public (double[] mean, double[] covariance) predict(double[] xQueries, bool returnStd = false)
         {
             double[] mean = new double[xQueries.Length];
             double[] covariance = new double[xQueries.Length];
 
             for (int i = 0; i < xQueries.Length; i++)
             {
-                var res = predict(xQueries[i]);
+                var res = predict(xQueries[i], returnStd);
                 mean[i] = res.mean;
                 covariance[i] = res.covariance;
             }
@@ -114,9 +132,19 @@ namespace BayesOpt.GPR
                 updated[size - 1, i] = value;
             }
 
-            updated[size - 1, size - 1] = kernel.Compute(xNew);
-            updated.MapInplace(q => Math.Round(q, 5));
+            updated[size - 1, size - 1] = kernel.Compute(xNew) + alpha;
+            // updated.MapInplace(q => Math.Round(q, 5));
             covariance = updated;
+        }
+
+        private double logMarginalLikelihood(double[] theta)
+        {
+            double lml = -0.5 * yTrainNormalized.DotProduct(alpha_);
+            var logDiag = cho.Factor.Diagonal();
+            logDiag.MapInplace(Math.Log);
+            lml -= logDiag.Sum();
+            lml -= (covariance.RowCount / 2.0) * Math.Log(2 * Math.PI);
+            return lml;
         }
 
         // sampleY(...)

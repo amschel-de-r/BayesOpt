@@ -3,9 +3,9 @@ using System.Linq;
 
 namespace BayesOpt.Kernels
 {
-    // Radial-basis function kernel (aka squared-exponential kernel)
     public class Matern : Kernel
     {
+        // TODO inherit from RBF, allow for hyperparameters
         private double lenScale;
         private double nu;
         private static double[] implementedNus = {0.5, 1.5, 2.5};

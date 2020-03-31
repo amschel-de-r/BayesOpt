@@ -50,6 +50,7 @@ namespace BayesOpt
                 optimizer.suggest();
                 logRun(optimizer, i+1);
                 System.Console.WriteLine(i);
+                System.Console.WriteLine(optimizer._gp.logMarginalLikelihoodValue);
             }
         }
 

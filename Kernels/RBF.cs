@@ -6,10 +6,11 @@ namespace BayesOpt.Kernels
     // Radial-basis function kernel (aka squared-exponential kernel)
     public class RBF : Kernel
     {
-        private double lenScale;
-        public RBF(double lenScale)
+        private double lenScale { get { return hyperparameters[0].value; } }
+        public RBF(double lenScale = 1, double lenScaleMin = 1e-5, double lenScaleMax = 1e5)
         {
-            this.lenScale = lenScale;
+            hyperparameters = new Hyperparameter[1];
+            hyperparameters[0] = new Hyperparameter("lenScale", lenScale, lenScaleMin, lenScaleMax);
         }
         internal override double Compute(double left, double right) 
         {

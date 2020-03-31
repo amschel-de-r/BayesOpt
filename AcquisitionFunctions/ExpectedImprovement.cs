@@ -33,9 +33,9 @@ namespace BayesOpt.AcquisitionFunctions
 
         public override double AcqValue(double x)
         {
-            var res = predict(x);
+            var res = predict(x, returnStd: true);
             double mean = res.mean;
-            double std = Math.Sqrt(res.covariance);
+            double std = res.covariance;
             double yMax = this.yMax;
 
             double z = (mean - yMax - xi) / std;

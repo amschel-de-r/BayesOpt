@@ -13,7 +13,7 @@ namespace BayesOpt
         private TargetSpace _space;
         private Func<double, double> targetFunc;
         private List<double> _queue;
-        private GaussianProcessRegressor _gp;
+        public GaussianProcessRegressor _gp;
         private int resolution;
 
         public BayesianOptimisation((double min, double max) paramBounds, int resolution, Func<double, double> targetFunc = null)
