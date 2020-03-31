@@ -99,7 +99,9 @@ namespace BayesOpt
                 }
                 else
                 {
-                    x_probe = suggest(ac);
+                    double next = suggest(ac);
+                    Console.WriteLine(next);
+                    x_probe = next;
                     iteration++;
                 }
 

@@ -20,14 +20,16 @@ observed_dt = [('x', 'd'), ('y', 'd')]
 allPredicted = []
 allObserved = []
 allAquisition = []
+allNextBest = []
 nQueries = int(sys.argv[1])
 
 names = ["Cs", "Py"]
 pyIndex = names.index("Py")
 nLibs = 2
 pynext_dt = [('x', 'd')]
-with open("DataOutput/pythonnextbest.json", "r") as read_file:
-    pynextbest = json.load(read_file)
+def simpleJsonRead(lib):
+    with open(f"DataOutput/nextbest{lib}.json", "r") as read_file:
+        return json.load(read_file)
 
 for i in range(nLibs):
     currentPredicted = []
@@ -40,7 +42,7 @@ for i in range(nLibs):
         currentPredicted.append(ipredicted)
         currentObserved.append(iobserved)
         currentAquisition.append(iaquisition)
-
+    allNextBest.append(simpleJsonRead(names[i]))
     allPredicted.append(currentPredicted)
     allObserved.append(currentObserved)
     allAquisition.append(currentAquisition)
@@ -102,6 +104,7 @@ def init():
 
         ax1s[i].set_xlim(aquisition['x'].min(), aquisition['x'].max())
         ax1s[i].set_ylim(0, aquisition['y'].max() * 1.05)
+    plt.savefig("init.png")
 
 
 def update(i):
@@ -110,9 +113,7 @@ def update(i):
         observed = allObserved[j][i]
         aquisition = allAquisition[j][i]
 
-        next_query_point = aquisition[np.argmax(aquisition['y'])]['x']
-        if j == pyIndex:
-            next_query_point = pynextbest[i]
+        next_query_point = allNextBest[j][i]
         predlns[j].set_data(predicted['x'], predicted['mean'])
         ax0s[j].collections.clear()
         ax0s[j].fill_between(predicted['x'], predicted['lower'], predicted['upper'], color="lightblue")
@@ -128,6 +129,7 @@ def update(i):
         x_data, y_data = nextaqln.get_data()
         x_data = [next_query_point for x in x_data]
         nextaqlns[j].set_data(x_data, y_data)
+    plt.savefig(f"{i}.png")
 
 
 ani = FuncAnimation(fig, update, frames=nQueries, init_func=init, interval=2000)

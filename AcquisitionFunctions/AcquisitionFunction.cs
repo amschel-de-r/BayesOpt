@@ -2,6 +2,7 @@ using BayesOpt.GPR;
 using BayesOpt.Utils;
 using System.Collections.Generic;
 using System.Linq;
+using MathNet.Numerics;
 using MathNet.Numerics.Distributions;
 using MathNet.Numerics.Random;
 
@@ -54,10 +55,12 @@ namespace BayesOpt.AcquisitionFunctions
 
         public double AcqMax()
         {
-            ContinuousUniform uniform = new ContinuousUniform(_bounds.min, _bounds.max);
-            double[] xTries = new double[resolution];
-            uniform.Samples(xTries);
-            xTries = xTries.OrderBy(q => q).ToArray();
+            // TODO improve random search
+            // ContinuousUniform uniform = new ContinuousUniform(_bounds.min, _bounds.max);
+            // double[] xTries = new double[resolution];
+            // uniform.Samples(xTries);
+            double[] xTries = Generate.LinearSpaced(resolution, _bounds.min, _bounds.max);
+            // xTries = xTries.OrderBy(q => q).ToArray();
             mean = new List<double>();
             covar = new List<double>();
 

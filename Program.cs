@@ -14,6 +14,7 @@ namespace BayesOpt
     using Utils;
     class Program
     {
+        static List<double> nextBest;
         static void Main(string[] args)
         {
             if (args.Length == 0)
@@ -34,6 +35,7 @@ namespace BayesOpt
                     System.Console.WriteLine("Number of runs must be an integer");
                     return;
                 }
+                nextBest = new List<double>();
                 run(runs);
             }
         }
@@ -50,7 +52,7 @@ namespace BayesOpt
                 optimizer.suggest();
                 logRun(optimizer, i+1);
                 System.Console.WriteLine(i);
-                System.Console.WriteLine(optimizer._gp.logMarginalLikelihoodValue);
+                // System.Console.WriteLine(optimizer._gp.logMarginalLikelihoodValue);
             }
         }
 
@@ -65,7 +67,9 @@ namespace BayesOpt
             double[] mean = optimizer.space.Mean;
             double[] covariance = optimizer.space.Covariance;
             double[] acqVals = optimizer.space.AcquisitionVals;
-            double[] nextX = new double[] { optimizer.space.NextBest };
+            double next = optimizer.space.NextBest;
+            Console.WriteLine(next);
+            nextBest.Add(next);
 
             var estimationResults = new List<EstimationResult>();
             var queryResults = new List<DataPoint>();
@@ -98,6 +102,10 @@ namespace BayesOpt
             var json3 = JsonConvert.SerializeObject(af, Formatting.Indented);
             string filename3 = "DataOutput/aquisition_testCs" + run + ".json";
             File.WriteAllText(filename3, json3);
+
+            string filename = "DataOutput/nextbestCs.json";
+            var json4 = JsonConvert.SerializeObject(nextBest.ToArray());
+            File.WriteAllText(filename, json4);
         }
 
         static void writeJson(double[] vals, string name, int run)

@@ -66,10 +66,10 @@ for i in range(runs):
     optimizer.maximize(init_points=0, n_iter=1, acq='ei', kappa=2.576, xi=0)
     log_gp(optimizer, x, i)
     print(i)
-    print(optimizer._gp.log_marginal_likelihood_value_)
+    # print(optimizer._gp.log_marginal_likelihood_value_)
 
 
-with open("DataOutput/pythonnextbest.json", 'w') as json_file:
+with open("DataOutput/nextbestPy.json", 'w') as json_file:
     json.dump(pynextbest, json_file)
 
 subprocess.run(f"dotnet run {runs};", check=True, shell=True)
