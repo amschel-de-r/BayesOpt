@@ -129,7 +129,7 @@ def update(i):
         x_data, y_data = nextaqln.get_data()
         x_data = [next_query_point for x in x_data]
         nextaqlns[j].set_data(x_data, y_data)
-    plt.savefig(f"{i}.png")
+    # plt.savefig(f"{i}.png")
 
 
 ani = FuncAnimation(fig, update, frames=nQueries, init_func=init, interval=2000)

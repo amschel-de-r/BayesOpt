@@ -12,6 +12,7 @@ namespace BayesOpt
 {
     using Kernels;
     using Utils;
+    using Optimisers;
     class Program
     {
         static List<double> nextBest;
@@ -22,10 +23,26 @@ namespace BayesOpt
                 System.Console.WriteLine("No inputs");
                 return;
             }
-            else if (args.Length > 1)
+            else if (args.Length > 2)
             {
                 System.Console.WriteLine("Too many args");
                 return;
+            }
+            else if (args.Length == 2)
+            {
+                var a = Matrix<double>.Build.Dense(3, 3, (i,j) => 3*i + j);
+                var b = Matrix<double>.Build.Dense(3,3, (i,j) => 3*j + i);
+                var V = Vector<double>.Build;
+                var c = V.DenseOfArray(new double[]{0, 1, 2, 3, 4});
+                var d = c;
+                var e = V.DenseOfArray(new double[] {10, 5, 1});
+                var white = new RBF();
+                var cov = white.Compute(c, d);
+                Console.WriteLine(a);
+                Console.WriteLine(e);
+                Console.WriteLine(a * e);
+                
+                // testGridSearch(10000);
             }
             else
             {
@@ -38,6 +55,18 @@ namespace BayesOpt
                 nextBest = new List<double>();
                 run(runs);
             }
+        }
+
+        static void testGridSearch(int resolution)
+        {
+            Console.WriteLine("start");
+            GridSearch gs = new GridSearch(
+                v => 1 - Math.Pow(v[0],2) - Math.Pow(v[1],2) + 2*v[0] + 4*v[1],
+                new double[,]{{-4,4},{-4,4}},
+                resolution
+            );
+            var res = gs.maximise();
+            Console.WriteLine(string.Join(',', res.thetaOpt));
         }
 
         static void run(int runs)

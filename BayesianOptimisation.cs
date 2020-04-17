@@ -6,6 +6,7 @@ namespace BayesOpt
     using GPR;
     using Utils;
     using AcquisitionFunctions;
+    using Kernels;
 
     public class BayesianOptimisation
     {
@@ -114,6 +115,13 @@ namespace BayesOpt
             _space.setBounds(min, max);
         }
 
-        // Set gp params
+        public void setParams(
+            Kernel kernel = null,
+            double? alpha = null,
+            bool? normalizeY = null
+        )
+        {
+            _gp.setParams(kernel, alpha, normalizeY);
+        }
     }
 }

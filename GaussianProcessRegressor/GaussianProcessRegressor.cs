@@ -2,6 +2,7 @@ using BayesOpt.Kernels;
 using BayesOpt.Utils;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Factorization;
+using MathNet.Numerics.Distributions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace BayesOpt.GPR
     public class GaussianProcessRegressor
     {
         private Kernel kernel;
-        private Matrix<double> covariance;
+        private Matrix<double> K;
         private Matrix<double> K_inv = null;
         private double alpha;
         // optimizer
@@ -25,36 +26,41 @@ namespace BayesOpt.GPR
         private Cholesky<double> cho;
         private Vector<double> alpha_;
         public double logMarginalLikelihoodValue;
-        public GaussianProcessRegressor(Kernel kernel = null, bool normalizeY = false, double alpha = 1e-5)
-        {
+        VectorBuilder<double> V = Vector<double>.Build;
+        MatrixBuilder<double> M = Matrix<double>.Build;
+        public GaussianProcessRegressor(
+            Kernel kernel = null,
+            bool normalizeY = false,
+            double alpha = 1e-5
+        ) {
             // TEST speed
             this.kernel = kernel ?? new RBF(lenScale: 1) * new ConstantKernel(constantValue: 1); // default kernel if none supplied
             this.normalizeY = normalizeY;
             this.alpha = alpha;
             xTrain = new List<double>();
             yTrain = new List<double>();
-            covariance = Matrix<double>.Build.Dense(1, 1);
+            K = M.Dense(1, 1);
         }
 
         public void fit(double x, double y)
         {
+            // TODO allow for array/vector input
+
             xTrain.Add(x);
             yTrain.Add(y);
-            if (normalizeY)
-            {
-                yTrainMean = yTrain.Average();
-                yTrainNormalized = Vector<double>.Build.DenseOfArray(yTrain.ToArray()) - yTrainMean;
-            }
-            else
-            {
-                yTrainNormalized = Vector<double>.Build.DenseOfArray(yTrain.ToArray());
-            }
+            yTrainMean = normalizeY ? yTrain.Average() : 0;
+            yTrainNormalized = V.DenseOfEnumerable(yTrain) - yTrainMean;
 
-            updateCovariance(x);
+            // TODO optimization step
+
+            // updateCovariance(x);
+            K = kernel.Compute(xTrain);
+            K += M.DenseDiagonal(K.RowCount, K.ColumnCount, alpha);
+            // TODO compare denseofenumerable to denseofarray
 
             try
             {
-                cho = covariance.Cholesky();
+                cho = K.Cholesky();
                 K_inv = null;
             }
             catch (System.ArgumentException)
@@ -80,7 +86,7 @@ namespace BayesOpt.GPR
 
             double[] kstarArray = xTrain.ToArray();
             kstarArray.ForEach(x => kernel.Compute(xQuery, x));
-            var kstar = Vector<double>.Build.DenseOfArray(kstarArray);
+            var kstar = V.DenseOfArray(kstarArray);
 
             double mean = kstar.DotProduct(alpha_);
             mean = normalizeY ? mean + yTrainMean : mean;
@@ -104,26 +110,85 @@ namespace BayesOpt.GPR
             }            
         }
 
-        public (double[] mean, double[] covariance) predict(double[] xQueries, bool returnStd = false)
-        {
-            double[] mean = new double[xQueries.Length];
-            double[] covariance = new double[xQueries.Length];
+        // public (double[] mean, double[] covariance) predict(double[] xQueries, bool returnStd = false)
+        // {
+        //     double[] mean = new double[xQueries.Length];
+        //     double[] covariance = new double[xQueries.Length];
 
-            for (int i = 0; i < xQueries.Length; i++)
+        //     for (int i = 0; i < xQueries.Length; i++)
+        //     {
+        //         var res = predict(xQueries[i], returnStd);
+        //         mean[i] = res.mean;
+        //         covariance[i] = res.covariance;
+        //     }
+
+        //     return (mean, covariance);
+        // }
+
+        public (Vector<double> mean, Matrix<double> cov, Vector<double> std) predict(
+            Vector<double> X,
+            bool returnStd = false,
+            bool returnCov = false
+        ) {
+
+            Vector<double> yMean;
+
+            if (xTrain.Count == 0)
             {
-                var res = predict(xQueries[i], returnStd);
-                mean[i] = res.mean;
-                covariance[i] = res.covariance;
+                yMean = V.Dense(X.Count);
+                
+                if (returnCov)
+                {
+                    return (mean: yMean, cov: kernel.Compute(X), std: null);
+                }
+                else if (returnStd)
+                {
+                    var yStd = kernel.Compute(X).Diagonal().PointwiseSqrt();
+                    // TODO add diag method to kernels
+                    return (mean: yMean, cov: null, std: yStd);
+                }
+                else
+                {
+                    return (mean: yMean, null, null);
+                }
             }
 
-            return (mean, covariance);
+            var Kstar = kernel.Compute(X, xTrain);
+            yMean = Kstar * alpha_;
+            yMean += yTrainMean;
+
+            if (returnCov)
+            {
+                var v = cho.Solve(Kstar.Transpose());
+                var cov = kernel.Compute(X) - Kstar * v;
+                return (mean: yMean, cov: cov, std: null);
+            }
+            else if (returnStd)
+            {
+                var v = cho.Solve(Kstar.Transpose());
+                var cov = kernel.Compute(X) - Kstar * v;
+                var yVar = cov.Diagonal();
+                return (mean: yMean, cov: null, std: yVar.PointwiseSqrt());
+            }
+            else
+            {
+                return (mean: yMean, null, null);
+            }             
+        }
+
+        public (Vector<double> mean, Matrix<double> cov, Vector<double> std) predict(
+            IEnumerable<double> X,
+            bool returnStd = false,
+            bool returnCov = false
+        ) {
+            return predict(V.DenseOfEnumerable(X), returnStd, returnCov);
         }
 
         private void updateCovariance(double xNew)
         {
             int size = xTrain.Count;
             var updated = Matrix<double>.Build.Dense(size, size);
-            covariance.ForEach((i, j, q) => updated[i, j] = q);
+            K.ForEach((i, j, q) => updated[i, j] = q);
 
             for (int i = 0; i < size - 1; i++)
             {
@@ -134,7 +199,7 @@ namespace BayesOpt.GPR
 
             updated[size - 1, size - 1] = kernel.Compute(xNew) + alpha;
             // updated.MapInplace(q => Math.Round(q, 5));
-            covariance = updated;
+            K = updated;
         }
 
         private double logMarginalLikelihood(double[] theta)
@@ -143,14 +208,40 @@ namespace BayesOpt.GPR
             var logDiag = cho.Factor.Diagonal();
             logDiag.MapInplace(Math.Log);
             lml -= logDiag.Sum();
-            lml -= (covariance.RowCount / 2.0) * Math.Log(2 * Math.PI);
+            lml -= (K.RowCount / 2.0) * Math.Log(2 * Math.PI);
             return lml;
         }
 
-        // sampleY(...)
+        public (double[] s1, double[] s2, double[] s3) sampleY(double[] X)
+        {
+            var res = predict(X, returnStd: false);
+            // MatrixNormal mn = new MatrixNormal(
+            //     Matrix<double>.Build.Dense(3, X.Length, 0)
+            // )
+            return (new double[0], new double[0], new double[0]);
+        }
 
         // logMargLike(...)
 
         // constrainedOptimization...
+        public void setParams(
+            Kernel kernel = null,
+            double? alpha = null,
+            bool? normalizeY = null
+        )
+        {
+            if (kernel != null)
+                this.kernel = kernel;
+            
+            if (alpha is double alphaValue)
+                this.alpha = alphaValue;
+            
+            if (normalizeY is bool shouldNormalizeY)
+                this.normalizeY = shouldNormalizeY;
+                
+            // optimizer
+            // nRestartsOptimizer
+            // random state (int?)
+        }
     }
 }

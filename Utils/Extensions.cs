@@ -82,7 +82,7 @@ namespace BayesOpt.Utils
             }
         }
 
-        public static TSrc ArgMax<TSrc, TArg>(this IEnumerable<TSrc> ie, Converter<TSrc, TArg> fn)
+        public static TSrc ArgMaxWeird<TSrc, TArg>(this IEnumerable<TSrc> ie, Converter<TSrc, TArg> fn)
             where TArg : IComparable<TArg>
         {
             IEnumerator<TSrc> e = ie.GetEnumerator();
@@ -125,6 +125,32 @@ namespace BayesOpt.Utils
                 if ((tx = e.Current).CompareTo(max_val) > 0)
                 {
                     max_val = tx;
+                    max_ix = i;
+                }
+                i++;
+            }
+            while (e.MoveNext());
+            return max_ix;
+        }
+
+        public static int ArgMax<TSrc, TArg>(this IEnumerable<TSrc> ie, Converter<TSrc, TArg> fn)
+            where TArg : IComparable<TArg>
+        {
+            IEnumerator<TSrc> e = ie.GetEnumerator();
+            if (!e.MoveNext())
+                return -1;
+
+            int max_ix = 0;
+            TArg v, max_val = fn(e.Current);
+            if (!e.MoveNext())
+                return max_ix;
+
+            int i = 1;
+            do
+            {
+                if ((v = fn(e.Current)).CompareTo(max_val) > 0)
+                {
+                    max_val = v;
                     max_ix = i;
                 }
                 i++;

@@ -53,10 +53,36 @@ namespace BayesOpt.Kernels
                 return b;
             }
         }
-        
+        MatrixBuilder<double> M = Matrix<double>.Build;
+        VectorBuilder<double> V = Vector<double>.Build;
         internal abstract double Compute(double left, double right);
         internal double Compute(double x) { return Compute(x, x); }
-        // TODO write more overload methods
+        public Matrix<double> Compute(Vector<double> X, Vector<double> Y = null)
+        {
+            Y = Y ?? X;
+            var matX = M.DenseOfColumnVectors(Enumerable.Repeat(X, Y.Count));
+            var matY = M.DenseOfRowVectors(Enumerable.Repeat(Y, X.Count));
+            var result = M.Dense(X.Count, Y.Count);
+            matX.Map2(Compute, matY, result, Zeros.Include);
+            return result;
+        }
+
+        public Matrix<double> Compute(IEnumerable<double> X, IEnumerable<double> Y = null)
+        {
+            var vX = X as Vector<double>;
+            if (vX == null)
+                vX = V.DenseOfEnumerable(X);
+                
+            Y = Y ?? X;
+
+            var vY = Y as Vector<double>;
+            if (vY == null)
+                vY = V.DenseOfEnumerable(Y);
+
+            return Compute(vX, vY);
+        }
+        
+        // TODO compare speed with [,] array
 
         public static implicit operator Kernel(double constant)
         {
